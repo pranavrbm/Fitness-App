@@ -98,7 +98,6 @@ services:
       runtime: docker
       dockerfilePath: ./fitness-app-frontend/Dockerfile
       dockerContext: ./fitness-app-frontend
-      port: 3000
       autoDeploy: true
       envVars:
           - key: VITE_API_URL
