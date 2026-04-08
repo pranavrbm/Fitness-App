@@ -4,7 +4,6 @@ services:
       runtime: docker
       dockerfilePath: ./configserver/Dockerfile
       dockerContext: ./configserver
-      port: 8888
       startCommand: java -jar -Dserver.port=${PORT} app.jar
       autoDeploy: true
 
@@ -13,8 +12,7 @@ services:
       runtime: docker
       dockerfilePath: ./eureka/Dockerfile
       dockerContext: ./eureka
-      port: 8761
-      startCommand: java -jar app.jar
+      startCommand: java -jar -Dserver.port=${PORT} app.jar
       autoDeploy: true
 
     - type: web
@@ -22,7 +20,6 @@ services:
       runtime: docker
       dockerfilePath: ./activityservice/Dockerfile
       dockerContext: ./activityservice
-      port: 8080
       startCommand: java -jar -Dserver.port=${PORT} app.jar
       autoDeploy: true
       envVars:
@@ -40,7 +37,6 @@ services:
       runtime: docker
       dockerfilePath: ./userservice/Dockerfile
       dockerContext: ./userservice
-      port: 8080
       startCommand: java -jar -Dserver.port=${PORT} app.jar
       autoDeploy: true
       envVars:
@@ -58,7 +54,6 @@ services:
       runtime: docker
       dockerfilePath: ./aiservice/Dockerfile
       dockerContext: ./aiservice
-      port: 8080
       startCommand: java -jar -Dserver.port=${PORT} app.jar
       autoDeploy: true
       envVars:
@@ -76,7 +71,6 @@ services:
       runtime: docker
       dockerfilePath: ./gateway/Dockerfile
       dockerContext: ./gateway
-      port: 8080
       startCommand: java -jar -Dserver.port=${PORT} app.jar
       autoDeploy: true
       envVars:
@@ -99,12 +93,11 @@ services:
                 name: ai-service
                 property: renderUrl
 
-    - type: web
+    - type: static
       name: fitness-frontend
-      runtime: docker
-      dockerfilePath: ./fitness-app-frontend/Dockerfile
-      dockerContext: ./fitness-app-frontend
-      port: 3000
+      rootDir: fitness-app-frontend
+      buildCommand: npm ci && npm run build
+      staticPublishPath: dist
       autoDeploy: true
       envVars:
           - key: VITE_API_URL
