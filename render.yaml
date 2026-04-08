@@ -93,12 +93,11 @@ services:
                 name: ai-service
                 property: renderUrl
 
-    - type: web
-      name: fitness-frontend
-      runtime: docker
-      dockerfilePath: ./fitness-app-frontend/Dockerfile
-      dockerContext: ./fitness-app-frontend
-      port: 3000
+staticSites:
+    - name: fitness-frontend
+      rootDir: fitness-app-frontend
+      buildCommand: npm ci && npm run build
+      publishPath: dist
       autoDeploy: true
       envVars:
           - key: VITE_API_URL
