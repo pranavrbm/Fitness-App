@@ -1,0 +1,113 @@
+services:
+    - type: web
+      name: config-server
+      runtime: docker
+      dockerfilePath: ./configserver/Dockerfile
+      dockerContext: ./configserver
+      port: 8888
+      startCommand: java -jar -Dserver.port=${PORT} app.jar
+      autoDeploy: true
+
+    - type: web
+      name: eureka-server
+      runtime: docker
+      dockerfilePath: ./eureka/Dockerfile
+      dockerContext: ./eureka
+      port: 8761
+      startCommand: java -jar app.jar
+      autoDeploy: true
+
+    - type: web
+      name: activity-service
+      runtime: docker
+      dockerfilePath: ./activityservice/Dockerfile
+      dockerContext: ./activityservice
+      port: 8080
+      startCommand: java -jar -Dserver.port=${PORT} app.jar
+      autoDeploy: true
+      envVars:
+          - key: SPRING_PROFILES_ACTIVE
+            value: render
+          - key: MONGODB_URI
+            sync: false
+          - key: CONFIG_SERVER_URL
+            fromService:
+                name: config-server
+                property: renderUrl
+
+    - type: web
+      name: user-service
+      runtime: docker
+      dockerfilePath: ./userservice/Dockerfile
+      dockerContext: ./userservice
+      port: 8080
+      startCommand: java -jar -Dserver.port=${PORT} app.jar
+      autoDeploy: true
+      envVars:
+          - key: SPRING_PROFILES_ACTIVE
+            value: render
+          - key: MONGODB_URI
+            sync: false
+          - key: CONFIG_SERVER_URL
+            fromService:
+                name: config-server
+                property: renderUrl
+
+    - type: web
+      name: ai-service
+      runtime: docker
+      dockerfilePath: ./aiservice/Dockerfile
+      dockerContext: ./aiservice
+      port: 8080
+      startCommand: java -jar -Dserver.port=${PORT} app.jar
+      autoDeploy: true
+      envVars:
+          - key: SPRING_PROFILES_ACTIVE
+            value: render
+          - key: MONGODB_URI
+            sync: false
+          - key: CONFIG_SERVER_URL
+            fromService:
+                name: config-server
+                property: renderUrl
+
+    - type: web
+      name: api-gateway
+      runtime: docker
+      dockerfilePath: ./gateway/Dockerfile
+      dockerContext: ./gateway
+      port: 8080
+      startCommand: java -jar -Dserver.port=${PORT} app.jar
+      autoDeploy: true
+      envVars:
+          - key: SPRING_PROFILES_ACTIVE
+            value: render
+          - key: CONFIG_SERVER_URL
+            fromService:
+                name: config-server
+                property: renderUrl
+          - key: ACTIVITY_SERVICE_URL
+            fromService:
+                name: activity-service
+                property: renderUrl
+          - key: USER_SERVICE_URL
+            fromService:
+                name: user-service
+                property: renderUrl
+          - key: AI_SERVICE_URL
+            fromService:
+                name: ai-service
+                property: renderUrl
+
+    - type: web
+      name: fitness-frontend
+      runtime: docker
+      dockerfilePath: ./fitness-app-frontend/Dockerfile
+      dockerContext: ./fitness-app-frontend
+      port: 3000
+      autoDeploy: true
+      envVars:
+          - key: VITE_API_URL
+            fromService:
+                name: api-gateway
+                property: renderUrl
