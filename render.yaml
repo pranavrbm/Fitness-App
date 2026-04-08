@@ -93,11 +93,11 @@ services:
                 name: ai-service
                 property: renderUrl
 
-    - type: static
-      name: fitness-frontend
+staticSites:
+    - name: fitness-frontend
       rootDir: fitness-app-frontend
       buildCommand: npm ci && npm run build
-      staticPublishPath: dist
+      publishPath: dist
       autoDeploy: true
       envVars:
           - key: VITE_API_URL
