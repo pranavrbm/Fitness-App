@@ -5,12 +5,12 @@ spring:
         mongodb:
             uri: ${MONGODB_URI:mongodb://localhost:27017/fitness_app}
     config:
-        import: optional:configserver:http://${CONFIG_SERVER_HOSTPORT:localhost:8888}
+        import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
 
 eureka:
     client:
         serviceUrl:
-            defaultZone: http://${EUREKA_SERVER_HOSTPORT:localhost:8761}/eureka
+            defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka}
 
 server:
     port: ${PORT:8080}
